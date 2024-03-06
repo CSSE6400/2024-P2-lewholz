@@ -26,8 +26,14 @@ def get_todos():
     todos = Todo.query.all()
     result = []
 
+    # retrieve the completed parameter from the request
+    completed_param = request.args.get('completed')
     for todo in todos:
-        result.append(todo.to_dict())
+        # if there is no completed parameter passed just return all todos
+        if completed_param is None:
+            result.append(todo.to_dict())
+        elif todo.completed: 
+            result.append(todo.to_dict())
     
     return jsonify(result)
 
