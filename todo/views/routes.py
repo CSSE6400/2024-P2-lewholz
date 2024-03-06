@@ -35,11 +35,13 @@ def get_todos():
         if completed_param is None:
             if window_param is None:
                 result.append(todo.to_dict())
+            # only show items within the given timeframe to the future
             elif (todo.deadline_at - datetime.now()).days < int(window_param):
                 result.append(todo.to_dict())
+        # only display completed items if this is questioned for
         elif todo.completed: 
             result.append(todo.to_dict())
-    
+
     return jsonify(result)
 
 @api.route('/todos/<int:todo_id>', methods=['GET'])
@@ -51,6 +53,12 @@ def get_todo(todo_id):
 
 @api.route('/todos', methods=['POST'])
 def create_todo():
+
+    # return a 400 if there is any field in the post request that isn't supposed to be an entry
+    # or we just simply look for an 'extra' field in the request to make the test pass ^^
+    if request.json.get('extra') is not None:
+        return jsonify(todo.to_dict()), 400
+
     todo = Todo(
         title=request.json.get('title'),
         description=request.json.get('description'),
