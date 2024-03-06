@@ -161,7 +161,7 @@ class TestTodo(TodoTest):
 
         todo = {"extra": "extra"}
         response = self.client.put('/api/v1/todos/1', json=todo)
-        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.status_code, 400) #Fails
 
     def test_put_item_not_found(self):
         todo = {"title": "New Title"}
@@ -171,9 +171,9 @@ class TestTodo(TodoTest):
     def test_put_item_change_id(self):
         self._populate_records([TODO_1])
 
-        todo = {"id": 2}
+        todo = {"id": 2} # supposed to change 1 id of 1 to 2 - shouldn't be possible
         response = self.client.put('/api/v1/todos/1', json=todo)
-        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.status_code, 400) # Fails
 
         response = self.client.get('/api/v1/todos/1')
         self.assertEqual(response.status_code, 200)

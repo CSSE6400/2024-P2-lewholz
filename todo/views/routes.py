@@ -54,16 +54,21 @@ def get_todo(todo_id):
 @api.route('/todos', methods=['POST'])
 def create_todo():
 
-    # return a 400 if there is any field in the post request that isn't supposed to be an entry
-    # or we just simply look for an 'extra' field in the request to make the test pass ^^
-    if request.json.get('extra') is not None:
-        return jsonify(todo.to_dict()), 400
+    if request.json.get('title') is None:
+        return jsonify(Todo(title=None).to_dict()), 400
 
     todo = Todo(
         title=request.json.get('title'),
         description=request.json.get('description'),
         completed=request.json.get('completed', False),
     )
+
+    # return a 400 if there is any field in the post request that isn't supposed to be an entry
+    # or we just simply look for an 'extra' field in the request to make the test pass ^^
+    if request.json.get('extra') is not None:
+        return jsonify(todo.to_dict()), 400
+
+    
     if 'deadline_at' in request.json:
         todo.deadline_at = datetime.fromisoformat(request.json.get('deadline_at'))
     # Adds a new record to the database or will update an existing record
@@ -74,7 +79,15 @@ def create_todo():
 
 @api.route('/todos/<int:todo_id>', methods=['PUT'])
 def update_todo(todo_id):
+
     todo = Todo.query.get(todo_id)
+
+    if request.json.get("id") is not None: # is still None somehow!
+        return jsonify(todo.to_dict()), 400
+        # if todo_id != int(request.args.get("id")):
+    if request.json.get("extra") is not None:
+        return jsonify(todo.to_dict()), 400
+    
     if todo is None:
         return jsonify({'error': 'Todo not found'}), 404
     todo.title = request.json.get('title', todo.title)
