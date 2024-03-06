@@ -28,10 +28,15 @@ def get_todos():
 
     # retrieve the completed parameter from the request
     completed_param = request.args.get('completed')
+    # retrieve the window parameter (number of days)
+    window_param = request.args.get('window')
     for todo in todos:
-        # if there is no completed parameter passed just return all todos
+
         if completed_param is None:
-            result.append(todo.to_dict())
+            if window_param is None:
+                result.append(todo.to_dict())
+            elif (todo.deadline_at - datetime.now()).days < int(window_param):
+                result.append(todo.to_dict())
         elif todo.completed: 
             result.append(todo.to_dict())
     
